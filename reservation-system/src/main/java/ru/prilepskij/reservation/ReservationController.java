@@ -63,11 +63,11 @@ public class ReservationController {
         return ResponseEntity.ok(updated);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable("id") Long id){
-        log.info("Called deleteReservation id = {}", id);
+    @DeleteMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancelReservation(@PathVariable("id") Long id){
+        log.info("Called cancelReservation id = {}", id);
         try{
-            reservationService.deleteReservation(id);
+            reservationService.cancelReservation(id);
             return ResponseEntity.ok().build();
         } catch (NoSuchElementException e){
             return ResponseEntity.status(404).build();
