@@ -26,13 +26,11 @@ public class ReservationController {
     @GetMapping("/{id}")
     public ResponseEntity<Reservation> getReservationById(@PathVariable("id") Long id){
         log.info("Called getReservationById: id=" + id);
-        try{
-            return ResponseEntity
+
+        return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(reservationService.getReservationById(id));
-        } catch (NoSuchElementException e){
-            return ResponseEntity.status(404).build();
-        }
+
 
 
     }
@@ -66,12 +64,11 @@ public class ReservationController {
     @DeleteMapping("/{id}/cancel")
     public ResponseEntity<Void> cancelReservation(@PathVariable("id") Long id){
         log.info("Called cancelReservation id = {}", id);
-        try{
-            reservationService.cancelReservation(id);
-            return ResponseEntity.ok().build();
-        } catch (NoSuchElementException e){
-            return ResponseEntity.status(404).build();
-        }
+        reservationService.cancelReservation(id);
+        return ResponseEntity.ok().build();
+
+
+
 
     }
 
