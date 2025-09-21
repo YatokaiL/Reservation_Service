@@ -23,9 +23,6 @@ public class ReservationService {
 
 
     public Reservation getReservationById(Long id) {
-
-
-
        ReservationEntity reservationEntity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Not found reservation by id = " + id));
@@ -34,7 +31,6 @@ public class ReservationService {
     }
 
     public List<Reservation> findAllReservation() {
-
         List<ReservationEntity> allEntities = repository.findAll();
 
         return allEntities.stream()
@@ -43,15 +39,12 @@ public class ReservationService {
     }
 
     public Reservation createReservation(Reservation reservationToCreate) {
-
-        if (reservationToCreate.id() != null){
-            throw new IllegalArgumentException("Id should be empty");
-        }
-
         if (reservationToCreate.status() != null){
             throw new IllegalArgumentException("Status should be empty");
         }
-
+        if (!reservationToCreate.startDate().isAfter(reservationToCreate.endDate())){
+            throw new IllegalArgumentException("Start date must be 1 day earlier tham end date");
+        }
 
         var entityToSave = new ReservationEntity(
                 null,
@@ -63,20 +56,20 @@ public class ReservationService {
         );
 
         var savedEntity = repository.save(entityToSave);
-
         return toDomainReservation(savedEntity);
     }
 
     public Reservation updateReservation(Long id, Reservation reservationToUpdate) {
-
-
         var reservationEntity = repository.findById(id)
                 .orElseThrow(
                 () -> new EntityNotFoundException("Not found reservation by id = " + id));
 
-
         if (reservationEntity.getStatus() !=  ReservationStatus.PENDING){
             throw new IllegalStateException("Cannot modify reservation with status " + reservationEntity.getStatus());
+        }
+
+        if (!reservationToUpdate.endDate().isAfter(reservationToUpdate.startDate())){
+            throw new IllegalArgumentException("Start date must be 1 day earlier tham end date");
         }
 
         var reservationToSave = new ReservationEntity(
@@ -89,24 +82,28 @@ public class ReservationService {
         );
 
         var updatedReservation = repository.save(reservationToSave);
-
-
         return toDomainReservation(updatedReservation);
-
     }
 
     @Transactional
     public void cancelReservation(Long id) {
-        if (!repository.existsById(id)){
-            throw  new EntityNotFoundException("Not found reservation by id = " + id);
+
+        var reservationEntity = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Not found reservation by id = " + id));
+
+        if(reservationEntity.getStatus().equals(ReservationStatus.APPROVED)){
+            throw new IllegalStateException("Cannot cancel approved reservation. Contact with manager please");
         }
+
+        if(reservationEntity.getStatus().equals(ReservationStatus.CANCELLED)){
+            throw new IllegalStateException("Cannot cancel canceled reservation" );
+        }
+
         repository.setStatus(id, ReservationStatus.CANCELLED);
         log.info("Successfully cancelled reservation id = {}", id);
-
     }
 
     public Reservation approveReservation(Long id) {
-
         var reservationEntity = repository.findById(id)
                 .orElseThrow(
                         () -> new EntityNotFoundException("Not found reservation by id = " + id));
@@ -114,6 +111,7 @@ public class ReservationService {
         if (reservationEntity.getStatus() !=  ReservationStatus.PENDING){
             throw new IllegalStateException("Cannot approve reservation with status " + reservationEntity.getStatus());
         }
+
 
         var isConflict = isReservationConflict(reservationEntity);
 
@@ -125,7 +123,6 @@ public class ReservationService {
         repository.save(reservationEntity);
 
         return toDomainReservation(reservationEntity);
-
     }
 
     private boolean isReservationConflict(ReservationEntity reservation){
@@ -149,7 +146,6 @@ public class ReservationService {
     }
 
     private Reservation toDomainReservation(ReservationEntity reservationEntity){
-
         return new Reservation(
                 reservationEntity.getId(),
                 reservationEntity.getUserId(),

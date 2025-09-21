@@ -1,6 +1,7 @@
 package ru.prilepskij.reservation;
 
 
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -43,7 +44,7 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<Reservation> createReservation(@RequestBody Reservation reservationToCreate){
+    public ResponseEntity<Reservation> createReservation(@RequestBody @Valid Reservation reservationToCreate){
         log.info("Called CreateReservation");
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -53,7 +54,8 @@ public class ReservationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Reservation> updateReservation(@PathVariable("id") Long id, @RequestBody Reservation reservationToUpdate)
+    public ResponseEntity<Reservation> updateReservation(@PathVariable("id") Long id,
+                                                         @RequestBody @Valid Reservation reservationToUpdate)
     {
         log.info("Called UpdateReservation id = {}, reservationToUpdate = {}", id, reservationToUpdate);
         var updated = reservationService.updateReservation(id, reservationToUpdate);
@@ -66,7 +68,6 @@ public class ReservationController {
         log.info("Called cancelReservation id = {}", id);
         reservationService.cancelReservation(id);
         return ResponseEntity.ok().build();
-
 
 
 
