@@ -1,4 +1,4 @@
-package ru.prilepskij.reservation;
+package ru.prilepskij.reservation.web;
 
 
 import jakarta.persistence.EntityNotFoundException;

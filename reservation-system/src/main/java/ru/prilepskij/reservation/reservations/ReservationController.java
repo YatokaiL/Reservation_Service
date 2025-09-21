@@ -1,4 +1,4 @@
-package ru.prilepskij.reservation;
+package ru.prilepskij.reservation.reservations;
 
 
 import jakarta.validation.Valid;
@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/reservation")
@@ -37,10 +36,15 @@ public class ReservationController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<Reservation>> getAllReservation(){
+    public ResponseEntity<List<Reservation>> getAllReservation(
+            @RequestParam(name = "roomId", required = false) Long roomId,
+            @RequestParam(name = "userId", required = false) Long userId,
+            @RequestParam(name = "pageSize", required = false) Integer pageSize,
+            @RequestParam(name = "pageNumber", required = false) Integer pageNumber)
+    {
         log.info("Called getReservationAllId");
-        return ResponseEntity.ok(reservationService.findAllReservation());
-
+        var filter = new ReservationSearchFilter(roomId, userId, pageSize, pageNumber);
+        return ResponseEntity.ok(reservationService.searchAllByFilter(filter));
     }
 
     @PostMapping

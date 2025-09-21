@@ -1,4 +1,4 @@
-package ru.prilepskij.reservation;
+package ru.prilepskij.reservation.reservations;
 
 import jakarta.persistence.*;
 
