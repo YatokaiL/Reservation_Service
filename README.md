@@ -1,5 +1,11 @@
 # Reservation Service
 
+![Java](https://img.shields.io/badge/Java-21-orange)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4-6db33f)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791)
+![Maven](https://img.shields.io/badge/Maven-3-c71a36)
+![Docker](https://img.shields.io/badge/Docker-PostgreSQL-2496ED)
+
 REST API для бронирования комнат. Пользователь создаёт заявку на бронь, менеджер подтверждает или отклоняет её. Сервис не даёт подтвердить бронь, если комната на эти даты уже занята.
 
 ## Стек
